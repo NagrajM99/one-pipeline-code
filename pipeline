@@ -6,17 +6,17 @@ pipeline {
     stages {
         stage('Code') {
             steps {
-                git "https://github.com/devops0014/one.git"
+                git "https://github.com/NagrajM99/one.git"
             }
         }
         stage ("CQA") {
             steps {
                 withSonarQubeEnv('mysonar') {
                     sh '''
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=MyProject \
-                        -Dsonar.host.url=<your-sonar-url>
-                        -Dsonar.login=<enter-your-token>
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=FirstProject \
+                          -Dsonar.host.url=http://44.204.80.147:9000 \
+                          -Dsonar.login=sqp_a460d0b5bf33978a138b202779d510f0ee90d612
                     '''
                 }
             }
@@ -28,12 +28,12 @@ pipeline {
         }
         stage ("Artifact") {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'myweb', classifier: '', file: 'target/myweb-8.7.3.war', type: '8.7.3']], credentialsId: 'nexus', groupId: 'in.javahome', nexusUrl: '<your-nexus-url>', nexusVersion: 'nexus3', protocol: 'http', repository: 'myrepo', version: '8.7.3'
+                nexusArtifactUploader artifacts: [[artifactId: 'myweb', classifier: '', file: 'target/myweb-8.7.3.war', type: '8.7.3']], credentialsId: 'nexus', groupId: 'in.javahome', nexusUrl: 'http://49.196.2.306:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'myrepo', version: '8.7.3'
             }
         }
         stage ("Deploy") {
             steps {
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: '<your-tomcat-url>')], contextPath: 'myapp', war: 'target/*.war'
+                deploy adapters: [tomcat10(credentialsId: 'tomcat', path: '', url: 'http://54.147.3.207:8080')], contextPath: 'myapp', war: 'target/*.war'
             }
         }
     }
